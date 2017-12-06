@@ -63,6 +63,23 @@ class cpw(object):
             self.paths[0].x=self.finalx
             self.paths[0].y=self.finaly
             self.paths.append(pathlaunch)
+    def endgap(self):
+        gapwid=self.gapwid
+        tracewid=self.tracewid
+        if (self.x == self.paths[0].x) & (self.y == self.paths[0].y):
+            dirction=self.paths[0].direction
+            endctrpt=(self.paths[0].x, self.paths[0].y)
+            rightend=addtup(addtup(endctrpt,scalartup(0.5*gapwid,(numpy.cos(dirction+numpy.pi),numpy.sin(dirction+numpy.pi)))),scalartup(0.5*(tracewid+2*gapwid),(numpy.cos(dirction-numpy.pi/2),numpy.sin(dirction-numpy.pi/2))))
+            endcap = gdspy.Path(gapwid, rightend)
+            endcap.segment(tracewid+2*gapwid,dirction+numpy.pi/2)
+            self.paths.append(endcap)
+        else:
+            dirction=self.paths[0].direction
+            endctrpt=(self.paths[0].x, self.paths[0].y)
+            rightend=addtup(addtup(endctrpt,scalartup(0.5*gapwid,(numpy.cos(dirction),numpy.sin(dirction)))),scalartup(0.5*(tracewid+2*gapwid),(numpy.cos(dirction-numpy.pi/2),numpy.sin(dirction-numpy.pi/2))))
+            endcap = gdspy.Path(gapwid, rightend)
+            endcap.segment(tracewid+2*gapwid,dirction+numpy.pi/2)
+            self.paths.append(endcap)
     def add2cell(self,cell):
         for p in self.paths:
             cell.add(p)
