@@ -93,26 +93,27 @@ class cpw(object):
             cell.add(p)
 class squid(object):
     def __init__(self,leaddist,leadlen,leadwid,squidheight,layer=0,datatype=1):
-        self.spec = {'layer': layer, 'datatype': datatype}
+        self.spec_side = {'layer': layer, 'datatype': datatype}
+        self.spec_mid = {'layer': layer+1, 'datatype': datatype}
         self.LeadDist=leaddist
         self.LeadWid=leadwid
         self.SquidHeight=squidheight
         self.LeadLen=leadlen
         midlead=gdspy.Path(leadwid,(0,0))
-        midlead.segment(leadlen,-numpy.pi/2,**(self.spec))
-        midlead.segment(leadlen,-numpy.pi/2,final_width=0,**(self.spec))
+        midlead.segment(leadlen,-numpy.pi/2,**(self.spec_mid))
+        midlead.segment(leadlen,-numpy.pi/2,final_width=0,**(self.spec_mid))
         sideleads=gdspy.Path(leadwid,(0,-squidheight),number_of_paths=2,distance=leaddist)
-        sideleads.segment(leadlen,numpy.pi/2,**(self.spec))
-        sideleads.segment(leadlen,numpy.pi/2,final_width=0,**(self.spec))
+        sideleads.segment(leadlen,numpy.pi/2,**(self.spec_side))
+        sideleads.segment(leadlen,numpy.pi/2,final_width=0,**(self.spec_side))
         self.paths=[midlead,sideleads]
-    def addwires(self,wirewids,extralen=0,layer=0,datatype=1):
-        self.spec_wire = {'layer': layer, 'datatype': datatype}
-        midlead=gdspy.Path(wirewids[0],(-self.LeadDist/2-extralen,-2*self.LeadLen))
-        midlead.segment(self.LeadDist+extralen*2,0,**(self.spec_wire))
-        sidelead1=gdspy.Path(wirewids[1],(-self.LeadDist/2,-squidheight+2*self.LeadLen))
-        sidelead1.segment(self.SquidHeight-4*self.LeadLen+extralen,numpy.pi/2,**(self.spec_wire))
-        sidelead2=gdspy.Path(wirewids[2],(self.LeadDist/2,-squidheight+2*self.LeadLen))
-        sidelead2.segment(self.SquidHeight-4*self.LeadLen+extralen,numpy.pi/2,**(self.spec_wire))
+    def addwires(self,wirewids,extralen=0):
+        squidheight=self.SquidHeight
+        midlead=gdspy.Path(wirewids[0],(-self.LeadDist/2-extralen,-2*self.LeadLen+wirewids[0]/2))
+        midlead.segment(self.LeadDist+extralen*2,0,**(self.spec_mid))
+        sidelead1=gdspy.Path(wirewids[1],(-self.LeadDist/2,-squidheight+1*self.LeadLen))
+        sidelead1.segment(self.SquidHeight-4*self.LeadLen+self.LeadLen+extralen,numpy.pi/2,**(self.spec_side))
+        sidelead2=gdspy.Path(wirewids[2],(self.LeadDist/2,-squidheight+1*self.LeadLen))
+        sidelead2.segment(self.SquidHeight-4*self.LeadLen+self.LeadLen+extralen,numpy.pi/2,**(self.spec_side))
         self.paths=self.paths+[midlead,sidelead1,sidelead2]
     def add2cell(self,cell):
         for p in self.paths:
