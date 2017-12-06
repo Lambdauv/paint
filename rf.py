@@ -80,6 +80,14 @@ class cpw(object):
             endcap = gdspy.Path(gapwid, rightend)
             endcap.segment(tracewid+2*gapwid,dirction+numpy.pi/2)
             self.paths.append(endcap)
+    def addmeander(self,firstlen,lastlen,straightlen,turnrad,Nturns):
+        dirction=self.paths[0].direction
+        self.addsegment(dirction,firstlen)
+        self.addturn(numpy.pi,turnrad)
+        for t in range(Nturns-1) :
+            self.addsegment(dirction+(t+1)*numpy.pi,straightlen)
+            self.addturn(((-1)**(t+1))*numpy.pi,turnrad)
+        self.addsegment(dirction+Nturns*numpy.pi,lastlen)
     def add2cell(self,cell):
         for p in self.paths:
             cell.add(p)
@@ -97,7 +105,7 @@ class squid(object):
         sideleads.segment(leadlen,numpy.pi/2,**(self.spec))
         sideleads.segment(leadlen,numpy.pi/2,final_width=0,**(self.spec))
         self.paths=[midlead,sideleads]
-    def addwires(self,wirewids,extralen=0,layer=self.spec['layer']+1,datatype=1):
+    def addwires(self,wirewids,extralen=0,layer=0,datatype=1):
         self.spec_wire = {'layer': layer, 'datatype': datatype}
         midlead=gdspy.Path(wirewids[0],(-self.LeadDist/2-extralen,-2*self.LeadLen))
         midlead.segment(self.LeadDist+extralen*2,0,**(self.spec_wire))
