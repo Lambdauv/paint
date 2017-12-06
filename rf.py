@@ -14,7 +14,7 @@ def addtup(a,b):
 def scalartup(a,v):
     return tuple([a*e for e in v])
 class cpw(object):
-    def __init__(self,Name,TraceWid,GapWid,x,y,layer,direction=0):
+    def __init__(self,Name,TraceWid,GapWid,x,y,layer=0,datatype=1,direction=0):
         self.name=Name
         self.tracewid=TraceWid
         self.gapwid=GapWid
@@ -23,7 +23,7 @@ class cpw(object):
         self.cell = gdspy.Cell(Name)
         self.paths=[gdspy.Path(GapWid, (x, y), number_of_paths=2, distance=TraceWid+GapWid)]
         self.paths[0].direction=direction
-        self.spec = {'layer': layer, 'datatype': 1}
+        self.spec = {'layer': layer, 'datatype': datatype}
     def addsegment(self,Direction,Length,final_TraceWid=None,final_GapWid=None):
         if (final_TraceWid != None)&(final_GapWid != None):
             self.paths[0].segment(Length,Direction,**(self.spec),final_distance=final_TraceWid+final_GapWid,final_width=final_GapWid)
@@ -33,9 +33,9 @@ class cpw(object):
         if (final_TraceWid != None)&(final_GapWid != None):
             self.paths[0].turn(radius,angle,final_distance=final_TraceWid+final_GapWid,final_width=final_GapWid,**(self.spec))
         else:
-            self.paths[0].turn(radius,angle)
-    def addcurve(self,curve,dcurve=None,Widths=None,Neval=600,layer=0):
-        self.paths[0].parametric(curve,dcurve,final_width=Widths,number_of_evaluations=Neval,layer=layer)
+            self.paths[0].turn(radius,angle,**(self.spec))
+    def addcurve(self,curve,dcurve=None,Widths=None,Neval=600):
+        self.paths[0].parametric(curve,dcurve,final_width=Widths,number_of_evaluations=Neval,**(self.spec))
     def addlauncher(self,final_TraceWid,final_GapWid,final_Length,tran_Length):
         if (self.x == self.paths[0].x) & (self.y == self.paths[0].y):
             dirction=self.paths[0].direction
