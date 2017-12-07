@@ -28,7 +28,7 @@ class holes(object):
                 ax0pt=addtup((0,0),scalartup(i,self.Axes[0]))
                 for j in range(self.Periods[1]):
                     ax1pt=addtup((0,0),scalartup(j,self.Axes[1]))
-                    if (excludepoly == None)|(not gdspy.inside(addtup(ax0pt,ax1pt),excludepoly)) :
+                    if (excludepoly == None)|(not gdspy.inside([addtup(ax0pt,ax1pt)],excludepoly)[0]) :
                         refcell=gdspy.CellReference(holecell,addtup(ax0pt,ax1pt))
                         self.holearray.add(refcell)
         elif (numpy.array(holecell).shape == arrayperiods) :
@@ -36,7 +36,7 @@ class holes(object):
                 ax0pt=addtup((0,0),scalartup(i,self.Axes[0]))
                 for j in range(self.Periods[1]):
                     ax1pt=addtup((0,0),scalartup(j,self.Axes[1]))
-                    if (excludepoly == None)|(not gdspy.inside(addtup(ax0pt,ax1pt),excludepoly)) :
+                    if (excludepoly == None)|(not gdspy.inside([addtup(ax0pt,ax1pt)],excludepoly)[0]) :
                         refcell=gdspy.CellReference(holecell[i,j],addtup(ax0pt,ax1pt))
                         self.holearray.add(refcell)
         else:
@@ -53,3 +53,16 @@ class cross(object):
         self.cell=cell
         for p in self.paths:
             cell.add(p)
+
+class circle(object):
+    def __init__(self,rad,rad_in=None,layer=0,datatype=0):
+        self.spec={'layer': layer, 'datatype': datatype}
+        self.rad=rad
+        if rad_in != None :
+            self.circle = gdspy.Round((0, 0), rad,**(self.spec))
+        else:
+            self.circle = gdspy.Round((0, 0), rad,inner_radius=rad_in,**(self.spec))
+            self.rad_in=rad_in
+    def add2cell(self,cell):
+        self.cell=cell
+        cell.add(self.circle)
