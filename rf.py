@@ -89,6 +89,7 @@ class cpw(object):
             self.addturn(((-1)**(t+1))*numpy.pi,turnrad)
         self.addsegment(dirction+Nturns*numpy.pi,lastlen)
     def add2cell(self,cell):
+        self.cell=cell
         for p in self.paths:
             cell.add(p)
 class squid(object):
@@ -116,5 +117,6 @@ class squid(object):
         sidelead2.segment(self.SquidHeight-4*self.LeadLen+self.LeadLen+extralen,numpy.pi/2,**(self.spec_side))
         self.paths=self.paths+[midlead,sidelead1,sidelead2]
     def add2cell(self,cell):
+        self.cell=cell
         for p in self.paths:
             cell.add(p)
