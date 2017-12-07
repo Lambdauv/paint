@@ -58,7 +58,7 @@ class circle(object):
     def __init__(self,rad,rad_in=None,layer=0,datatype=0):
         self.spec={'layer': layer, 'datatype': datatype}
         self.rad=rad
-        if rad_in != None :
+        if rad_in == None :
             self.circle = gdspy.Round((0, 0), rad,**(self.spec))
         else:
             self.circle = gdspy.Round((0, 0), rad,inner_radius=rad_in,**(self.spec))
